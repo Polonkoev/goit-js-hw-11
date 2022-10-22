@@ -1,12 +1,29 @@
-.search-form {
+.header {
+    display: flex;
     position: fixed;
+    top: 50px;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    height: 50px;
+    margin-top: 20px;
+
+    /* position: fixed;
     left: 50%;
     top: 30px;
     left: 50%;
     margin-right: -50%;
     transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
+    */
 }
 
 .input {
@@ -14,10 +31,13 @@
     color: #000;
     margin-right: 10px;
     width: 400px;
+    height: 50px;
     border-radius: 20px;
     border: 1px solid grey;
     font-size: medium;
     padding-left: 30px;
+    font-family: 'Comfortaa', sans-serif;
+
 }
 
 .load-more {
@@ -26,16 +46,23 @@
 
 .submit-btn {
 
-    width: 200px;
-    height: 50px;
-    background-color: #34b9b9;
+    width: 100px;
+    height: 54px;
+    background-color: #23c139;
+    color: #000000;
     border: 1px solid transparent;
     border-radius: 20px;
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    font-family: 'Comfortaa', sans-serif;
+    font-size: medium;
 }
 
 .submit-btn:hover {
-    background-color: aquamarine;
-    border: 1px solid red;
+    background-color: #00d2ff;
+    border: 1px solid #00d2ff;
 }
 
 .input:focus {
@@ -45,7 +72,7 @@
 
 .gallery {
     display: flex;
-margin-top: 50px;
+    margin-top: 50px;
     flex-wrap: wrap;
     padding: 20 4px;
     gap: 10px;

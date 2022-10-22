@@ -12,8 +12,7 @@ const loadMore = document.querySelector('.load-more');
 
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '30755005-c126f789c706217abec8a0f9e';
-let inputEl = '';
-let page = 1;
+
 
 let queryParams = {
   key: API_KEY,
@@ -21,7 +20,7 @@ let queryParams = {
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  page: page,
+  page: 1,
   per_page: 40,
 };
 
@@ -40,7 +39,7 @@ inputForm.addEventListener('submit', event => {
     })
     .then(data => {
       console.log(data);
-      if (data.total === 0) {
+      if (data.total === 0  ) {
         Notify.failure('Sorry! Images not found.');
       } else {
         Notify.info(`Hooray! We found ${data.totalHits} images.`);
