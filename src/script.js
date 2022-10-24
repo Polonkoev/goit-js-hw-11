@@ -3,18 +3,26 @@ import axios from 'axios';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+const body = document.querySelector('body');
 const inputForm = document.getElementById('search-form');
 const inputValue = document.querySelector('.input');
 const container = document.querySelector('.gallery');
 const header = document.getElementById('header');
-const lightbox = new SimpleLightbox('.gallery a', { captionsData: 'alt',
-captionDelay: 250, })
-const loadMore = document.querySelector('.load-more');
+const theme = document.getElementById('theme-btn');
+const logoImg = document.querySelector('.tumbler-img')
 
-// loadMore.style.display = 'flex';
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
+
+const loadMore = document.querySelector('.load-more');
 
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '30755005-c126f789c706217abec8a0f9e';
+
+
+
 
 let queryParams = {
   key: API_KEY,
@@ -28,10 +36,19 @@ let queryParams = {
 
 inputForm.addEventListener('submit', event => {
   event.preventDefault();
+  if(inputValue.value === ''){
+    Notify.warning('Пустой запрос')
+  }
+  else
+    {container.innerHTML = '';
+    queryParams.q = inputValue.value;
+    queryParams.page = 1;
+    queryFunction();}
+  
 
-  container.innerHTML = '';
-  queryParams.q = inputValue.value;
+});
 
+function queryFunction() {
   query()
     .then(response => {
       if (response.status !== 200) {
@@ -47,19 +64,22 @@ inputForm.addEventListener('submit', event => {
         Notify.info(`Hooray! We found ${data.totalHits} images.`);
       }
 
+      if (data.hits.length < 40 & data.hits.length !== 0) {
+        loadMore.style.display = 'none';
+        Notify.warning("We're sorry, but you've reached the end of search results.!")
+      } else if(data.hits.length === 40){
+        loadMore.style.display = 'flex';
+      }
+
       const renderData = data.hits
         .map(item => {
           container.insertAdjacentHTML(
-            'afterbegin',
-
-            `
-        
-            <div class="photo-card">
+            'beforeend',
+            `<div class="photo-card">
             <a class="gallery__item " href="${item.largeImageURL}">
             <img class="gallery__image" src="${item.webformatURL}" alt="${item.tags}" />
           </a>
-          
-          <div class="info">
+           <div class="info">
             <p class="info-item">
               <b>Likes</b>
               ${item.likes}
@@ -86,21 +106,23 @@ inputForm.addEventListener('submit', event => {
         .join('');
 
       console.log(data);
-     
-      container.insertAdjacentHTML('beforeend', renderData);
-  const { height: cardHeight } = container.firstElementChild.getBoundingClientRect();
 
-  window.scrollBy({
-    top: cardHeight * 2,
-    behavior: 'smooth',
-  });
-  lightbox.refresh();
+      container.insertAdjacentHTML('beforeend', renderData);
+      const { height: cardHeight } =
+        container.firstElementChild.getBoundingClientRect();
+
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
+      lightbox.refresh();
     })
     .catch(error => {
       console.error(error);
     });
   inputForm.reset();
-});
+}
+// Query function
 
 async function query() {
   try {
@@ -116,6 +138,8 @@ async function query() {
   }
 }
 
+//Smooth scrolling
+
 let prevScrollpos = window.pageYOffset;
 window.onscroll = function () {
   const currentScrollPos = window.pageYOffset;
@@ -126,5 +150,42 @@ window.onscroll = function () {
   }
   prevScrollpos = currentScrollPos;
 };
+
+//Theme switcher
+
+theme.addEventListener('click', () => {
+  if (theme.textContent === 'Dark') {
+    theme.textContent = 'Light';
+    header.style.backgroundColor = '#000';
+    body.style.backgroundColor = '#000';
+
+    inputValue.style.color = '#fff';
+    body.style.color = '#fff';
+
+    theme.style.color = '#fff';
+  } else {
+    theme.textContent = 'Dark';
+    header.style.backgroundColor = '#fff';
+    body.style.backgroundColor = '#fff';
+    body.style.color = '#000';
+    theme.style.backgroundColor = 'transparent';
+    theme.style.color = '#000';
+  }
+});
+
+loadMore.addEventListener('click', () => {
+  queryParams.page += 1;
+  queryFunction();
+});
+
+
+logoImg.addEventListener('click', backToTop )
+
+function backToTop() {
+  if (window.pageYOffset > 0) {
+    window.scrollBy(0, -80);
+    setTimeout(backToTop, 0);
+  }
+}
 
 
