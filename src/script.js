@@ -37,7 +37,7 @@ let queryParams = {
 inputForm.addEventListener('submit', event => {
   event.preventDefault();
   if(inputValue.value === ''){
-    Notify.warning('Пустой запрос')
+    Notify.warning('Enter something to request..')
   }
   else
     {container.innerHTML = '';
@@ -59,7 +59,7 @@ function queryFunction() {
     .then(data => {
       console.log(data);
       if (data.total === 0) {
-        Notify.failure('Sorry! Images not found.');
+        Notify.failure("Sorry, there are no images matching your search query. Please try again.");
       } else {
         Notify.info(`Hooray! We found ${data.totalHits} images.`);
       }
@@ -76,9 +76,11 @@ function queryFunction() {
           container.insertAdjacentHTML(
             'beforeend',
             `<div class="photo-card">
-            <a class="gallery__item " href="${item.largeImageURL}">
-            <img class="gallery__image" src="${item.webformatURL}" alt="${item.tags}" />
-          </a>
+            <div class="img-wrapper">
+              <a class="gallery__item " href="${item.largeImageURL}">
+              <img class="gallery__image" src="${item.webformatURL}" alt="${item.tags}" />
+            </a>
+            </div>
            <div class="info">
             <p class="info-item">
               <b>Likes</b>
@@ -106,15 +108,15 @@ function queryFunction() {
         .join('');
 
       console.log(data);
-
-      container.insertAdjacentHTML('beforeend', renderData);
+      if (data.total !== 0)
+      {container.insertAdjacentHTML('beforeend', renderData);
       const { height: cardHeight } =
         container.firstElementChild.getBoundingClientRect();
 
       window.scrollBy({
         top: cardHeight * 2,
         behavior: 'smooth',
-      });
+      });}
       lightbox.refresh();
     })
     .catch(error => {
@@ -170,6 +172,7 @@ theme.addEventListener('click', () => {
     body.style.color = '#000';
     theme.style.backgroundColor = 'transparent';
     theme.style.color = '#000';
+    inputValue.style.color = '#000';
   }
 });
 
