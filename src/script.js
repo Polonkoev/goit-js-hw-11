@@ -4,29 +4,27 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const body = document.querySelector('body');
-const inputForm = document.getElementById('search-form');
-const inputValue = document.querySelector('.input');
-const container = document.querySelector('.gallery');
+const form = document.getElementById('search-form');
+const inputEl = document.querySelector('.input');
+const gallery = document.querySelector('.gallery');
 const header = document.getElementById('header');
-const theme = document.getElementById('theme-btn');
-const logoImg = document.querySelector('.tumbler-img')
+const themeBtn = document.getElementById('theme-btn');
+const logoImg = document.querySelector('.tumbler-img');
+const loadMore = document.querySelector('.load-more');
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
 
-const loadMore = document.querySelector('.load-more');
-
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '30755005-c126f789c706217abec8a0f9e';
 
 
 
-
 let queryParams = {
   key: API_KEY,
-  q: inputValue.value,
+  q: inputEl.value,
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
@@ -34,19 +32,20 @@ let queryParams = {
   per_page: 40,
 };
 
-inputForm.addEventListener('submit', event => {
+form.addEventListener('submit', event => {
   event.preventDefault();
-  if(inputValue.value === ''){
-    Notify.warning('Enter something to request..')
-  }
-  else
-    {container.innerHTML = '';
-    queryParams.q = inputValue.value;
+  if (inputEl.value === '') {
+    Notify.warning('Enter something to request..');
+  } else {
+    gallery.innerHTML = '';
+    queryParams.q = inputEl.value;
     queryParams.page = 1;
-    queryFunction();}
-  
-
+    queryFunction();
+  }
 });
+
+
+//query function
 
 function queryFunction() {
   query()
@@ -57,23 +56,29 @@ function queryFunction() {
       return response.data;
     })
     .then(data => {
-      console.log(data);
       if (data.total === 0) {
-        Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+        Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
       } else {
         Notify.info(`Hooray! We found ${data.totalHits} images.`);
       }
 
-      if (data.hits.length < 40 & data.hits.length !== 0) {
+      if ((data.hits.length < 40) & (data.hits.length !== 0)) {
         loadMore.style.display = 'none';
-        Notify.warning("We're sorry, but you've reached the end of search results.!")
-      } else if(data.hits.length === 40){
+        Notify.warning(
+          "We're sorry, but you've reached the end of search results.!"
+        );
+      } else if (data.hits.length === 40) {
         loadMore.style.display = 'flex';
       }
 
+
+      // render HTML 
+
       const renderData = data.hits
         .map(item => {
-          container.insertAdjacentHTML(
+          gallery.insertAdjacentHTML(
             'beforeend',
             `<div class="photo-card">
             <div class="img-wrapper">
@@ -107,33 +112,33 @@ function queryFunction() {
         })
         .join('');
 
-      console.log(data);
-      if (data.total !== 0)
-      {container.insertAdjacentHTML('beforeend', renderData);
-      const { height: cardHeight } =
-        container.firstElementChild.getBoundingClientRect();
+      if (data.total !== 0) {
+        gallery.insertAdjacentHTML('beforeend', renderData);
+        const { height: cardHeight } =
+          gallery.firstElementChild.getBoundingClientRect();
 
-      window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
-      });}
+        window.scrollBy({
+          top: cardHeight * 2,
+          behavior: 'smooth',
+        });
+      }
       lightbox.refresh();
     })
     .catch(error => {
       console.error(error);
     });
-  inputForm.reset();
+  form.reset();
 }
-// Query function
+
+
+// async query function
 
 async function query() {
   try {
     const searchParams = new URLSearchParams(queryParams);
     const response = await axios.get(`${BASE_URL}?${searchParams}`);
     const todoItems = response;
-    console.log(response.status);
-    console.log(searchParams.toString());
-    console.log(`RESPONSE:from Pixabay`, todoItems);
+
     return todoItems;
   } catch (errors) {
     console.error(errors);
@@ -155,24 +160,24 @@ window.onscroll = function () {
 
 //Theme switcher
 
-theme.addEventListener('click', () => {
-  if (theme.textContent === 'Dark') {
-    theme.textContent = 'Light';
+themeBtn.addEventListener('click', () => {
+  if (themeBtn.textContent === 'Dark') {
+    themeBtn.textContent = 'Light';
     header.style.backgroundColor = '#000';
     body.style.backgroundColor = '#000';
 
-    inputValue.style.color = '#fff';
+    inputEl.style.color = '#fff';
     body.style.color = '#fff';
 
-    theme.style.color = '#fff';
+    themeBtn.style.color = '#fff';
   } else {
-    theme.textContent = 'Dark';
+    themeBtn.textContent = 'Dark';
     header.style.backgroundColor = '#fff';
     body.style.backgroundColor = '#fff';
     body.style.color = '#000';
-    theme.style.backgroundColor = 'transparent';
-    theme.style.color = '#000';
-    inputValue.style.color = '#000';
+    themeBtn.style.backgroundColor = 'transparent';
+    themeBtn.style.color = '#000';
+    inputEl.style.color = '#000';
   }
 });
 
@@ -181,8 +186,7 @@ loadMore.addEventListener('click', () => {
   queryFunction();
 });
 
-
-logoImg.addEventListener('click', backToTop )
+logoImg.addEventListener('click', backToTop);
 
 function backToTop() {
   if (window.pageYOffset > 0) {
@@ -190,5 +194,3 @@ function backToTop() {
     setTimeout(backToTop, 0);
   }
 }
-
-
